@@ -1,0 +1,12 @@
+<h4>Add Moves</h4>
+<form action="{{url_for('add_move', char_id=char_id)}}" method="post" name="addmove">
+    {{add_move.hidden_tag()}}
+    <p>
+        {{add_move.new_move.label}}
+        {{add_move.new_move}}
+    </p>
+    <p>
+        {{add_move.submit}}
+    </p>
+
+</form>

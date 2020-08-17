@@ -1,0 +1,15 @@
+input[type="radio"] {
+    display:none;
+}
+
+input[type="radio"]:checked+label{ 
+    background-color: #0275d8; 
+    color: #fff;
+    width: 40%;
+    border-radius: 15px;
+} 
+
+input[type="radio"]:not(:checked)+label{ 
+    color: #000; 
+    width: 40%;
+} 

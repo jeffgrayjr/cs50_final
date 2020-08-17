@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>{{form_title}}</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.character_name.label }}<br>
+            {{ form.character_name(size=32) }}<br>
+            {% for error in form.character_name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.character_class.label }}<br>
+            {{ form.character_class() }}<br>
+            {% for error in form.character_class.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.charm.label }}<br>
+            {{ form.charm() }}<br>
+            {% for error in form.charm.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.cool.label }}<br>
+            {{ form.cool() }}<br>
+            {% for error in form.cool.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.sharp.label }}<br>
+            {{ form.sharp() }}<br>
+            {% for error in form.sharp.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.tough.label }}<br>
+            {{ form.tough() }}<br>
+            {% for error in form.tough.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.weird.label }}<br>
+            {{ form.weird() }}<br>
+            {% for error in form.weird.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

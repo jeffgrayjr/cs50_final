@@ -1,0 +1,126 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block scripts %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+        function roll_dice(char_rating) {
+            $.post('/roll', {
+                rating: char_rating
+            }).done(function(response) {
+                $('#roll_1').text(response['roll_1'])
+                $('#roll_2').text(response['roll_2'])
+                $('#rating').text(response['rating'])
+                $('#total_roll').text(response['total'])
+            }).fail(function() {
+                $('#dice_tray').text("Failure");
+            });
+        } 
+
+        function save_char(char_id, luck, harm, exp) {
+            //need to add a save_char route to routes that i can send this post request to
+            $.post('/save_changes', {
+                char_id: char_id,
+                luck: luck,
+                harm: harm,
+                exp: exp
+            });
+        }
+
+        function delete_flash(flash){
+            $(flash).parent().parent().remove()
+        }
+
+        function confirm_delete(char_name, char_id) {
+            if (confirm("Are you sure you want to delete " + char_name + "?")) {
+                $.post('/delete_character', {
+                    char_id: char_id
+                }, function(response) {
+                    window.location.href = response.redirect;
+                });
+            }
+        }
+
+        $(document).on('change', '.harm', function() {
+            if (this.value >= 4) {
+                $('#unstable').text('True');
+            } else {
+                $('#unstable').text('False');
+            }
+        });
+
+        $(document).on('change', '#experience', function() {
+            if (this.value == 5){
+                $("#level_up").removeClass('disabled').addClass('active');
+            } else {
+                $("#level_up").removeClass('active').addClass('disabled');
+            }
+            
+        });
+
+        $(document).on('change', '#improvement', function() {
+            if (this.value == 1){
+                $("#new_move_block").show();
+            } else {
+                $("#new_move_block").hide();
+                $("#new_move").val("0");
+            }
+        });  
+        $("#improvement").trigger("change");    
+
+        $(document).on('click', '#edit_button', function() {
+            var char_id = $('#char_id').val();
+            var luck = $('input[name="luck_radio"]:checked').val();
+            var harm = $('input[name="harm_radio"]:checked').val();
+            var exp = $('input[name="experience"]').val();
+            save_char(char_id, luck, harm, exp);
+        });
+
+        $(document).on('click', '#level_up', function() {
+            var char_id = $('#char_id').val();
+            var luck = $('input[name="luck_radio"]:checked').val();
+            var harm = $('input[name="harm_radio"]:checked').val();
+            var exp = $('input[name="experience"]').val();
+            save_char(char_id, luck, harm, exp);
+        });
+    </script>
+{% endblock %}
+
+{% block head %}
+{{super()}}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+{% endblock %}
+
+{% block title %}
+    {% if title %}
+    {{ title }} - Final Project
+    {% else %}
+    Welcome to Final Project!
+    {% endif %}
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default">
+        <a href="{{ url_for('index') }}">Home</a>
+        {% if current_user.is_anonymous %}
+        <a href="{{ url_for('login') }}">Login</a>
+        {% else %}
+        <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+    </nav>
+{% endblock %}
+    
+{% block content %}
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info" role="alert">{{ message }}<a href="#"><span class="glyphicon glyphicon-remove pull-right" onclick=delete_flash(this)></span></a></div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {# application content needs to be provided in the app_content block #}
+        {% block app_content %}{% endblock %}
+    </div>
+{% endblock %}

@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <input id="char_id" type="hidden" value={{character.id}}>
+            <div class="form-row">
+                <div class="col-sm-3 col-sm-offset-1">
+                    <p>Character: {{ character.name }}</p>
+                </div>
+                <div class="col-sm-2">
+                    <p>Class: {{ character_class.class_name }}</p>
+                </div>
+                <div class="col-sm-2">
+                    <p>Level: {{ character.level }}</p>
+                </div>
+                <div class="col-sm-2">
+                    <p>
+                        {{form.experience.label}}
+                        {{form.experience}}
+                    </p>
+                </div>
+                <div class="col-sm-2">
+                    {% if character.experience == 5 %}
+                        <a class="btn btn-primary active" href="{{ url_for('level_up', char_id=character.id) }}" id="level_up">Level Up</a>
+                    {% else %}
+                        <a class="btn btn-primary disabled" href="{{ url_for('level_up', char_id=character.id) }}" id="level_up">Level Up</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <hr class="col-xs-12">
+            
+            <div class="row">
+                <div class="col-xs-10 col-sm-offset-1">
+                    <div class="row">
+                        <div class="col-sm-1 col-sm-offset-1">
+                            
+                            {{form.harm_radio.label}}:
+                        </div>
+                        {% for subfield in form.harm_radio %}
+                            <div class="col-sm-1 text-center">
+                                <td>{{subfield(class_="harm")}}</td>
+                                <td>{{subfield.label}}</td>
+                            </div>       
+                        {% endfor %}
+                        Unstable: <span id="unstable">
+                            {% if character.harm >= 4 %}
+                                True
+                            {% else %}
+                                False
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <hr class="col-xs-10 col-sm-offset-1">
+            <div class="row">
+                <div class="col-xs-10 col-sm-offset-1">
+                    <div class="row">
+                        <div class="col-xs-1 col-sm-offset-1">
+                            {{form.luck_radio.label}}:
+                        </div>
+                        {% for subfield_2 in form.luck_radio %}
+                            <div  class="col-sm-1 text-center">
+                                <td>{{subfield_2}}</td>
+                                <td>{{subfield_2.label}}</td>
+                            </div>
+                        {% endfor %}
+                        Luck Special: {{ character_class.luck_special }}
+                    </div>
+                </div>
+            </div>
+            <hr class="col-xs-12">
+                
+            
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    {{ form.submit(class="btn btn-primary") }}
+                    <a id="edit_button" class="btn btn-default" href="{{ url_for('edit_character', char_id=character.id, source='char_view') }}">Edit Character</a>
+                </div>
+            </div>  
+    </form>
+    
+    
+    <div class="row">
+        <div class="col-sm-7">
+            <h3>Moves</h3>
+            <h4>Manipulate Someone (Charm)</h4>
+            <p>Used to try and geet someone to do something for you, after you give them some type of reason</p>
+            <h4>Act Under Pressure (Cool)</h4>
+            <p>Used for any difficult or dangerous action not covered by another move</p>
+            <h4>Help Out (Cool)</h4>
+            <p>Used to help another hunter do something. If you are succeed, you give them a bonus to their task</p>
+            <h4>Investigate a Mystery (Sharp)</h4>
+            <p>Used to work out what kind of monster you are dealing with, what it can do, and what it is planning</p>
+            <h4>Read a Bad Situation (Sharp)</h4>
+            <p>Used to work out what dangers are immediately threatening you</p>
+            <h4>Kick Some Ass (Tough)</h4>
+            <p>Used for fighting</p>
+            <h4>Protect Someone (Tough)</h4>
+            <p>Used to save someone from danger</p>
+            <h4>Use Magic (Weird)</h4>
+            <p>Used to cast magic spells or use enchanted items</p>
+            {% for move in current_char_moves %}
+                <h4>{{move.name}} ({{move.rating}})</h4>
+                <p>{{move.description}}</p>
+            {% endfor %}
+        </div>
+        <div class="col-sm-5">
+            <h3>Rating</h3>
+            <p>
+                {{ character.charm }} - Charm<br>
+                How pleasant and persuasive you are<br>
+                <a href="javascript:roll_dice({{character.charm}});">Roll + Charm</a>
+            </p>
+            <p>
+                {{ character.cool }} - Cool<br>
+                How calm and collected you are<br>
+                <a href="javascript:roll_dice({{character.cool}});">Roll + Cool</a>
+            </p>
+            <p>
+                {{ character.sharp }} - Sharp<br>
+                How observant you are<br>
+                <a href="javascript:roll_dice({{character.sharp}});">Roll + Sharp</a>
+            </p>
+            <p>
+                {{ character.tough }} - Tough<br>
+                How strong and mean you are in a fight<br>
+                <a href="javascript:roll_dice({{character.tough}});">Roll + Tough</a>
+            </p>
+            <p>
+                {{ character.weird }} - Weird<br>
+                How attuned to the supernatural you are<br>
+                <a href="javascript:roll_dice({{character.weird}});">Roll + Weird</a>
+            </p>
+            <h3>Dice Tray</h3>
+            <table>
+                <tr>
+                    <td>Roll 1:</td>
+                    <td><span id="roll_1"></span></td>
+                </tr>
+                <tr>
+                    <td>Roll 2:</td>
+                    <td><span id="roll_2"></span></td>
+                </tr>
+                <tr>
+                    <td>Rating:</td>
+                    <td><span id="rating"></span></td>
+                </tr>
+                <tr>
+                    <td>Total:</td>
+                    <td><span id="total_roll"></span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <h2>Character Notes</h2>
+            <table class="table">
+            {% for note in char_notes %}
+                <tr>
+                    <td class="text-wrap">{{note.note}}</td>
+                    <td><a href="{{ url_for('remove_note', char_id=character.id, note_id=note.id) }}">Delete</a></td>
+                </tr>
+            {% endfor %}
+            </table>
+    
+            <form action="{{url_for('add_note', char_id=character.id)}}" method="post" name="addnote">
+                {{form.hidden_tag()}}
+                <h4>Add Note</h4>
+                <p>
+                    {{add_note.note(placeholder="Character Note", maxlength="256")}}
+                </p>
+                <p>
+                    {{add_note.submit}}
+                </p>
+            </form>
+        </div>
+
+        <div class="col-sm-4">
+            <h2 id="inventory">Inventory</h2>
+            <table class="table">
+                <tr>
+                    <th>Item</th>
+                    <th>Tags</th>
+                    <th>Notes</th>
+                    <th></th>
+                </tr>
+                {% for item in char_items%}
+                    <tr>
+                        <td>{{item.name}}</td>
+                        <td>{{item.tags}}</td>
+                        <td>{{item.description}}</td>
+                        <td><a href="{{ url_for('remove_item', char_id=character.id, item_id=item.id) }}">Remove</a></td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+            
+
+            <form action="{{url_for('add_item', char_id=character.id)}}" method="post" name="additem">
+                {{form.hidden_tag()}}
+                <h2>Add Item:</h2>
+                <p>
+                    {{add_item.name(placeholder="Item name")}}
+                </p>
+                <p>
+                {{add_item.tags(placeholder="Tags")}}
+                </p>
+                <p>
+                    {{add_item.description(placeholder="Item notes", maxlength="128")}}
+                </p>
+                <p>
+                    {{add_item.submit()}}
+                </p>
+            </form>
+        </div>
+
+        <div class="col-sm-2">
+            {%if current_char_improvements[0] != 'None'%}
+                <h2>Improvements</h2>
+                <ul>
+                    {%for improvement in current_char_improvements%}
+                        <li>{{ improvement.description }}</li>     
+                    {% endfor %} 
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+
+    <h4>Add improvement</h4>
+    <form action="{{url_for('add_improvement', char_id=character.id)}}" method="post" name="addimprovement">
+        {{form.hidden_tag()}}
+        <p>
+            {{add_improvement.improvement.label}}:<br>
+            {{add_improvement.improvement}}
+        </p>
+        <p>
+            {{add_improvement.submit}}
+        </p>
+        
+    </form>
+
+    
+    
+    
+{% endblock %}

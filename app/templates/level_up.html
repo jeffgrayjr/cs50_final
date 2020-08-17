@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h4>Level Up</h4>
+<form action="" method="post" name="level_up">
+    {{level_up.hidden_tag()}}
+    <p>
+        {{level_up.improvement.label}}
+        {{level_up.improvement}}
+        <br>
+        {% for error in level_up.improvement.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p id="new_move_block">
+        {{level_up.new_move.label}}
+        {{level_up.new_move}}
+        <br>
+        {% for error in level_up.new_move.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{level_up.submit}}
+    </p>
+
+</form>
+{% endblock %}
